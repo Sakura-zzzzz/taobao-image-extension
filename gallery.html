@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>商品图片提取结果</title>
+  <link rel="stylesheet" href="gallery.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="topbar__info">
+      <h1 class="topbar__title">商品图片</h1>
+      <p class="topbar__meta" id="meta">正在读取提取结果…</p>
+    </div>
+
+    <div class="topbar__actions">
+      <label class="check">
+        <input type="checkbox" id="selectAll">
+        <span>全选</span>
+      </label>
+      <button type="button" class="btn" id="btnInvert">反选</button>
+      <button type="button" class="btn" id="btnPickLarge">仅选大图</button>
+
+      <label class="field">
+        <span>最小尺寸</span>
+        <input type="number" id="minSize" value="100" min="0" max="4000" step="10">
+        <span>px</span>
+      </label>
+
+      <label class="check">
+        <input type="checkbox" id="showSmall">
+        <span>显示小图</span>
+      </label>
+
+      <span class="counter" id="counter">已选 0 张</span>
+      <button type="button" class="btn btn--primary" id="btnDownload">下载选中</button>
+    </div>
+  </header>
+
+  <section class="progress" id="progressWrap" hidden>
+    <div class="progress__track">
+      <div class="progress__bar" id="progressBar"></div>
+    </div>
+    <p class="progress__text" id="progressText"></p>
+  </section>
+
+  <main class="grid" id="grid"></main>
+
+  <section class="empty" id="empty" hidden>
+    <h2>还没有提取到图片</h2>
+    <p>打开淘宝 / 天猫 / 京东 / 拼多多的商品详情页，点击页面右下角的「获取图片」按钮，结果会自动显示在这里。</p>
+    <p class="empty__hint">也可以直接点浏览器工具栏上的扩展图标，在任意页面手动触发一次提取。</p>
+  </section>
+
+  <section class="report" id="report" hidden>
+    <div class="report__head">
+      <h2 id="reportTitle">下载结果</h2>
+      <div class="report__actions">
+        <button type="button" class="btn" id="btnCopyReport">复制结果</button>
+        <button type="button" class="btn" id="btnCloseReport">收起</button>
+      </div>
+    </div>
+    <ul class="report__list" id="reportList"></ul>
+  </section>
+
+  <div class="toast" id="toast" hidden></div>
+
+  <!-- 单张图片卡片模板：避免在 JS 里拼 HTML 字符串 -->
+  <template id="cardTpl">
+    <figure class="card">
+      <label class="card__pick" title="勾选/取消勾选">
+        <input type="checkbox">
+        <span class="card__box" aria-hidden="true"></span>
+      </label>
+
+      <div class="card__thumb">
+        <img alt="" loading="lazy" decoding="async">
+        <span class="card__badge" hidden></span>
+      </div>
+
+      <figcaption class="card__info">
+        <span class="card__dims">测量中…</span>
+        <span class="card__domain"></span>
+      </figcaption>
+
+      <div class="card__actions" hidden>
+        <button type="button" class="mini mini--retry">重试加载</button>
+        <button type="button" class="mini mini--grant" hidden>授权并重试</button>
+      </div>
+    </figure>
+  </template>
+
+  <script src="gallery.js"></script>
+</body>
+</html>

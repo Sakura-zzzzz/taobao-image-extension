@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>本地测试页 · 模拟电商商品详情页</title>
+  <style>
+    body { margin: 0; padding: 24px; font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color: #111827; background: #f6f7f9; }
+    h1 { font-size: 20px; margin: 0 0 6px; }
+    h2 { font-size: 15px; margin: 28px 0 10px; }
+    p.hint { color: #6b7280; font-size: 13px; margin: 4px 0; }
+    .panel { max-width: 900px; margin: 0 auto 32px; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px; }
+    .row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+    .main { width: 320px; height: 320px; object-fit: contain; border: 1px solid #e5e7eb; border-radius: 8px; }
+    .thumb { width: 80px; height: 80px; object-fit: contain; border: 1px solid #e5e7eb; }
+    .bg-banner { width: 240px; height: 160px; background-size: cover; background-position: center; border-radius: 8px; }
+    .logo { width: 120px; }
+    .tiny { width: 24px; }
+    .price { color: #dc2626; font-size: 22px; font-weight: 700; }
+    table { border-collapse: collapse; width: 100%; font-size: 13px; }
+    th, td { border: 1px solid #e5e7eb; padding: 6px 10px; text-align: left; vertical-align: top; }
+    th { background: #f9fafb; font-weight: 600; }
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; }
+    .acc { color: #16a34a; }
+    .rej { color: #dc2626; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>本地测试页 · 模拟电商商品详情页</h1>
+    <p class="hint">localhost / 127.0.0.1 / file:// 属于调试域名，扩展会直接注入按钮，方便离线验证整条链路。</p>
+    <p class="hint">用 file:// 打开时，需要在 <code>chrome://extensions</code> 的扩展详情页里打开「允许访问文件网址」。</p>
+    <p class="hint">所有图片都是本地 SVG 夹具，不需要联网。</p>
+
+    <h2>1. 主图（显式 src，扫描时已加载完成）</h2>
+    <div class="row">
+      <img class="main" src="img-1600x1600.svg" alt="商品主图">
+      <div>
+        <div class="price">￥ 199.00</div>
+        <p class="hint">主图区，同时放一个 <code>&lt;a href&gt;</code> 指向大图，用于测试链接提取。</p>
+        <a href="img-1600x1600.svg">查看大图</a>
+      </div>
+    </div>
+
+    <h2>2. srcset（应取 800w，而不是 300w）</h2>
+    <div class="row">
+      <img class="thumb" src="img-300x300.svg" srcset="img-300x300.svg 300w, img-800x800.svg 800w" alt="srcset">
+    </div>
+
+    <h2>3. 懒加载属性（三种命名差异）</h2>
+    <div class="row">
+      <img class="thumb" data-src="img-600x900.svg" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="data-src">
+      <img class="thumb" data-ks-lazyload="img-800x800.svg" alt="data-ks-lazyload">
+      <img class="thumb" data-original="img-300x300.svg" alt="data-original">
+    </div>
+    <p class="hint">第一张的 <code>src</code> 是 1x1 的 data URI 占位图，扩展会跳过 data: 并改读 <code>data-src</code>。</p>
+
+    <h2>4. picture / source srcset</h2>
+    <div class="row">
+      <picture>
+        <source srcset="img-600x900.svg">
+        <img class="thumb" src="img-300x300.svg" alt="picture">
+      </picture>
+    </div>
+
+    <h2>5. 背景图（background-image）</h2>
+    <div class="row">
+      <div class="bg-banner" style="background-image: url('img-600x900.svg')"></div>
+    </div>
+
+    <h2>6. 视频封面 poster</h2>
+    <div class="row">
+      <video poster="img-800x800.svg" width="160" height="160" controls></video>
+    </div>
+
+    <h2>7. 应该被过滤掉的图</h2>
+    <div class="row">
+      <img src="img-1x1.svg" alt="1x1">
+      <img class="logo" src="logo-shop.svg" alt="logo">
+      <img class="tiny" src="icon-cart.svg" alt="icon">
+      <img src="img-80x80.svg" alt="80x80">
+    </div>
+    <p class="hint">1x1、logo、icon 由 URL 特征直接剔除；80x80 因为扫描时已加载完成且小于 100px，被尺寸规则剔除。</p>
+
+    <h2>8. 重复图（应被去重）</h2>
+    <div class="row">
+      <img class="thumb" src="img-800x800.svg" alt="重复 1">
+      <img class="thumb" src="img-800x800.svg" alt="重复 2">
+    </div>
+
+    <h2>期望的提取结果</h2>
+    <table>
+      <thead>
+        <tr><th>图片</th><th>来源</th><th>是否提取</th><th>说明</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>img-1600x1600.svg</td><td>img:src / a:href</td><td class="acc">是（去重后 1 条）</td><td>主图</td></tr>
+        <tr><td>img-800x800.svg</td><td>img:srcset / data-ks-lazyload / video:poster</td><td class="acc">是（去重后 1 条）</td><td>多个来源命中同一地址</td></tr>
+        <tr><td>img-600x900.svg</td><td>data-src / source:srcset / background-image</td><td class="acc">是（去重后 1 条）</td><td>懒加载 + 背景图</td></tr>
+        <tr><td>img-300x300.svg</td><td>img:src / data-original</td><td class="acc">是</td><td>大于 100px</td></tr>
+        <tr><td>img-80x80.svg</td><td>img:src</td><td class="rej">否</td><td>小于 100x100</td></tr>
+        <tr><td>img-1x1.svg</td><td>img:src</td><td class="rej">否</td><td>1x1 + URL 命中 1x1</td></tr>
+        <tr><td>logo-shop.svg</td><td>img:src</td><td class="rej">否</td><td>URL 命中 logo</td></tr>
+        <tr><td>icon-cart.svg</td><td>img:src</td><td class="rej">否</td><td>URL 命中 icon</td></tr>
+      </tbody>
+    </table>
+    <p class="hint">预期共 4 张。点右下角「获取图片」后，画廊页应当正好显示这 4 张，且尺寸信息正确。</p>
+  </div>
+</body>
+</html>

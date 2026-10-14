@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>自测页 · 提取与转 PNG 断言</title>
+  <style>
+    body { margin: 0; padding: 24px; font-family: -apple-system, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif; color: #111827; background: #f6f7f9; }
+    .panel { max-width: 980px; margin: 0 auto; background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 20px 22px; }
+    h1 { font-size: 20px; margin: 0 0 6px; }
+    p.hint { color: #6b7280; font-size: 13px; margin: 4px 0 16px; }
+    .summary { display: inline-flex; gap: 14px; padding: 10px 16px; border-radius: 10px; font-weight: 700; font-size: 15px; background: #f3f4f6; margin-bottom: 16px; }
+    .summary.is-pass { background: #dcfce7; color: #15803d; }
+    .summary.is-fail { background: #fee2e2; color: #b91c1c; }
+    .summary.is-run { background: #dbeafe; color: #1d4ed8; }
+    ul { list-style: none; margin: 0; padding: 0; font-size: 13px; }
+    li { display: flex; gap: 10px; padding: 6px 0; border-bottom: 1px solid #f3f4f6; align-items: flex-start; }
+    .tag { flex: 0 0 46px; font-weight: 700; }
+    .tag--pass { color: #16a34a; }
+    .tag--fail { color: #dc2626; }
+    .tag--info { color: #d97706; }
+    .name { flex: 1 1 auto; }
+    .detail { flex: 1 1 40%; color: #6b7280; word-break: break-all; font-family: ui-monospace, Consolas, monospace; font-size: 12px; }
+    .group { margin: 18px 0 8px; font-size: 14px; font-weight: 700; color: #374151; }
+    code { background: #f3f4f6; padding: 1px 5px; border-radius: 4px; }
+  </style>
+</head>
+<body>
+  <div class="panel">
+    <h1>自测页 · 提取与转 PNG 断言</h1>
+    <p class="hint">
+      本页直接加载 <code>shared/extract.js</code>（与内容脚本用的是同一份逻辑），在内存夹具上跑断言，
+      并验证 canvas 转 PNG 的完整链路。断言用的图片夹具在 <code>../demo/</code> 下。
+    </p>
+    <p class="hint">打开方式：直接双击本文件，或本地起服务后访问 <code>http://localhost:8000/test/selftest.html</code>。</p>
+
+    <div class="summary is-run" id="summary">正在运行…</div>
+    <div id="results"></div>
+  </div>
+
+  <!-- 夹具会被临时插入到这里（视觉上不可见但参与布局，保证图片能真正加载） -->
+  <div id="fixtures" style="position:absolute; left:-10000px; top:0; width:1200px;"></div>
+
+  <script src="../shared/extract.js"></script>
+  <script src="selftest.js"></script>
+</body>
+</html>

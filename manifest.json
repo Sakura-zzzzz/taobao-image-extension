@@ -1,0 +1,66 @@
+{
+  "manifest_version": 3,
+  "name": "电商图片提取下载（淘宝/天猫/京东/拼多多）",
+  "version": "1.0.0",
+  "description": "在淘宝、天猫、京东、拼多多的商品详情页一键提取所有商品图片，集中勾选后批量转成 PNG 下载。",
+  "minimum_chrome_version": "116",
+
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "downloads",
+    "storage"
+  ],
+
+  "host_permissions": [
+    "*://*.taobao.com/*",
+    "*://*.tmall.com/*",
+    "*://*.jd.com/*",
+    "*://*.jd.hk/*",
+    "*://*.pinduoduo.com/*",
+    "*://*.yangkeduo.com/*",
+
+    "*://*.alicdn.com/*",
+    "*://*.tbcdn.cn/*",
+    "*://*.360buyimg.com/*",
+    "*://*.pddpic.com/*"
+  ],
+
+  "optional_host_permissions": [
+    "https://*/*",
+    "http://*/*"
+  ],
+
+  "background": {
+    "service_worker": "background.js"
+  },
+
+  "action": {
+    "default_title": "提取当前页商品图片"
+  },
+
+  "content_scripts": [
+    {
+      "matches": [
+        "*://*.taobao.com/*",
+        "*://*.tmall.com/*",
+        "*://*.jd.com/*",
+        "*://*.jd.hk/*",
+        "*://*.pinduoduo.com/*",
+        "*://*.yangkeduo.com/*",
+        "http://localhost/*",
+        "http://127.0.0.1/*",
+        "file:///*"
+      ],
+      "js": [
+        "shared/extract.js",
+        "content.js"
+      ],
+      "css": [
+        "content.css"
+      ],
+      "run_at": "document_idle",
+      "all_frames": false
+    }
+  ]
+}
